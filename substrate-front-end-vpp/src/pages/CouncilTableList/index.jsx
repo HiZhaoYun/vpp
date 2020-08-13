@@ -161,24 +161,10 @@ async function optionClick(type,record) {
   const api = record.apiHook;
   const accountPair = record.pairHook;
   if (!api && !accountPair ) return;
-  console.log(record);
 
   const fromAcct = await getFromAcct(api,accountPair);
-  const param = transformParams([true],['5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY']);
-  await api.tx.parliamentModule.forceAddMember(...param).signAndSend(fromAcct,({status}) => {
-    if (status.isFinalized) {
-      try {
-        (async () => {
-          const params = transformParams([true, true],[record.key, Number(type)]);
-          await api.tx.auditModule.setproposalrole(...params).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
-        })()
-      } catch (error) {
-        console.log(error)
-      }
-    } else {
-      message.info(`Current transaction status: ${status.type}`);
-    }
-  }).catch(txErrHandler);
+  const params = transformParams([true, true],[record.key, Number(type)]);
+  await api.tx.auditModule.setproposalrole(...params).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
 }
 
 const roleName = (type) => {

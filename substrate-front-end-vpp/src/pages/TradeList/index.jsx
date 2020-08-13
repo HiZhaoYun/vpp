@@ -205,59 +205,9 @@ export const TradeList = () => {
     }
     const fromAcct = await getFromAcct();
     if (operation === 1) {// buy
-      const unsu = await api.tx.tradeModule.buyenergy(...param).signAndSend(fromAcct, ({status}) => {
-        if (status.isFinalized) {
-          try {
-            (async () => {
-              const params = transformParams(
-                [true, true, true, true, true, true, true, true],
-                [
-                  address,
-                  0,// PS对应VPP编号
-                  values.buy_energy_number,
-                  values.buy_energy_number,
-                  true,// 合同分类
-                  0, // 能源类型
-                  values.type,
-                  10000,// 电表编号
-                ]);
-              await api.tx.contractModule.addcontract(...params).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
-            })()
-          } catch (error) {
-            console.log(error)
-          }
-        } else {
-          message.info(`Current transaction status: ${status.type}`);
-        }
-      }).catch(txErrHandler);
-      setUnsub(() => unsu);
+      await api.tx.tradeModule.buyenergy(...param).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
     } else { // sell
-      const unsu = await api.tx.tradeModule.sellenergy(...param).signAndSend(fromAcct, ({status}) => {
-        if (status.isFinalized) {
-          try {
-            (async () => {
-              const params = transformParams(
-                [true, true, true, true, true, true, true, true],
-                [
-                  address,
-                  0,// PS对应VPP编号
-                  values.buy_energy_number,
-                  values.buy_energy_number,
-                  false,// 合同分类
-                  0, // 能源类型
-                  values.type,
-                  10000,// 电表编号
-                ]);
-              await api.tx.contractModule.addcontract(...params).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
-            })()
-          } catch (error) {
-            console.log(error)
-          }
-        } else {
-          message.info(`Current transaction status: ${status.type}`);
-        }
-      }).catch(txErrHandler);
-      setUnsub(() => unsu);
+      await api.tx.tradeModule.sellenergy(...param).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
     }
   };
 

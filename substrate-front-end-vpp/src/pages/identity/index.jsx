@@ -9,6 +9,8 @@ import AccountCard from "./components/AccountCard";
 import AccountHistory from "./components/AccountHistory";
 import GroupSvg from './assets/group.svg';
 import styles from './index.less';
+import {web3FromSource} from "@polkadot/extension-dapp";
+import {transformParams, txErrHandler, txResHandler} from "@/components/TxButton/utils";
 
 const { Title } = Typography;
 const idColor = (type) => {
@@ -102,6 +104,46 @@ export default () => {
       }
     });
   }, [api, address]);
+
+  const getFromAcct = async () => {
+    if (!accountPair) {
+      console.log('No accountPair!');
+      return ;
+    }
+
+    const {
+      addr,
+      meta: {source, isInjected}
+    } = accountPair;
+    let fromAcct;
+
+    // signer is from Polkadot-js browser extension
+    if (isInjected) {
+      const injected = await web3FromSource(source);
+      fromAcct = addr;
+      api.setSigner(injected.signer);
+    } else {
+      fromAcct = accountPair;
+    }
+
+    return fromAcct;
+  };
+
+  // add alice to council
+  useEffect(() => {
+    if (!api || !accountPair) return;
+
+    try {
+      (async () => {
+        const param = transformParams([true],[address]);
+        const fromAcct = await getFromAcct();
+        await api.tx.parliamentModule.forceAddMember(...param).signAndSend(fromAcct);
+      })()
+    } catch (error) {
+      console.log(error)
+    }
+
+  },[accountPair]);
 
   return (
     <PageContainer>

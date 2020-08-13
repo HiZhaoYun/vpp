@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input, Button } from 'antd';
 import styles from '../../TradeList/style.less';
 
 const formLayout = {
@@ -39,9 +39,9 @@ const TokenTradeModal = props => {
 
   const getModalContent = () => {
     return (
-      <Form {...formLayout} form={form} onFinish={handleFinish} onValuesChange={(changedValues , allValues) => {
+      <Form {...formLayout} form={form} onFinish={handleFinish} onValuesChange={(changedValues ) => {
         if (changedValues.buy_token) {
-          form.setFieldsValue({ amount_price: changedValues.buy_token });
+          form.setFieldsValue({ amount_price: changedValues.buy_token * (operation === 1 ? 1.1 : 0.9) });
         }
       }}>
         <Form.Item
@@ -55,6 +55,12 @@ const TokenTradeModal = props => {
           ]}
         >
           <Input placeholder="请输入数量" />
+        </Form.Item>
+        <Form.Item
+          name="rate"
+          label= "汇率"
+        >
+          <Button type="text">{operation === 1 ? "1.1" : "0.9"}</Button>
         </Form.Item>
         <Form.Item
           name="amount_price"

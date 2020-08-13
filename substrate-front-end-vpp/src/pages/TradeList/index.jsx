@@ -46,6 +46,8 @@ export const TradeList = () => {
   const {api} = useContext(ApiContext);
   const [accountPair, setAccountPair] = useState(null);
 
+  const [values, setValues] = useState({});
+
   // get pair
   useEffect(() => {
     if (!api && !keyring && !address) return;
@@ -78,15 +80,17 @@ export const TradeList = () => {
             logo: (data.energy_type === 0) ? Light : ((data.energy_type === 1) ? Wind : Fir),
             latest: new Date().toLocaleDateString(),
             total: 0,
-            canSell: data.pre_total_stock,
-            needBuy: data.sold_total,
-            name: data.vpp_name,
-            type: data.energy_type,
-            sellPrice: data.sell_price,
-            buyPrice: data.buy_price,
-            status: data.business_status === 'Opened' ? '营业中':'歇业',
-            code: data.post_code,
-            loss: data.transport_lose
+            pre_total_stock: data.pre_total_stock,
+            needBuy: 0,
+            vpp_name: "南京市发电厂",
+            energy_type: data.energy_type,
+            sell_price: data.sell_price,
+            buy_price: data.buy_price,
+            business_status: data.business_status,
+            post_code: "210000",
+            transport_lose: data.transport_lose,
+            device_id: data.device_id,
+            electric_type: data.electric_type
           });
         }
       });
@@ -122,28 +126,41 @@ export const TradeList = () => {
   };
 
   const signedTx = async (values) => {
-    const paramFields = [true, true, true, true, true, true, true, true, true, true, true];
+    const paramFields = addEdit === 2 ? [true, true, true, true, true, true, true, true, true] : [true, true, true, true, true, true, true, true, true, true, true];
     const inputParams =
+      addEdit === 2 ?
       [
         values.name,
-        values.pre_total_stock,
-        0,
-        (Number(values.electric_type) !== 0),
         values.energy_type,
+        values.pre_total_stock,
         values.buy_price,
         values.sell_price,
         values.post_code,
         values.transport_lose,
-        "Opened",
-        values.device_id
-      ];
+        values.device_id,
+        0,
+      ] : [
+          values.name,
+          values.pre_total_stock,
+          0,
+          (Number(values.electric_type) !== 0),
+          values.energy_type,
+          values.buy_price,
+          values.sell_price,
+          values.post_code,
+          values.transport_lose,
+          "Opened",
+          values.device_id,
+        ];
     const fromAcct = await getFromAcct();
     const transformed = transformParams(paramFields, inputParams);
     // transformed can be empty parameters
 
-    const txExecute = transformed
+    const txExecute = (addEdit === 2) ? (transformed
+      ? api.tx.tradeModule.editvpp(...transformed)
+      : api.tx.tradeModule.editvpp()) : (transformed
       ? api.tx.tradeModule.createvpp(...transformed)
-      : api.tx.tradeModule.createvpp();
+      : api.tx.tradeModule.createvpp());
 
     const unsu = await txExecute.signAndSend(fromAcct, txResHandler)
       .catch(txErrHandler);
@@ -159,7 +176,7 @@ export const TradeList = () => {
   };
 
   const handleSubmit = (values) => {
-    console.log(values);
+    setValues({});
     setVisibleModal(false);
     if (!api && !accountPair ) return;
 
@@ -169,6 +186,7 @@ export const TradeList = () => {
   //  *********** end *********** //
 
   const handleCancel = () => {
+    setValues({});
     setVisibleModal(false);
   };
 
@@ -199,7 +217,7 @@ export const TradeList = () => {
         values.buy_energy_number ? values.buy_energy_number : 100,// buy_energy_number sell_energy_number
         values.buy_energy_number ? values.buy_energy_number : 100,// buy_energy_token_amount sell_energy_token_amount
         values.type,
-        10000,// pu_ammeter_id pg_ammeter_id 消费者电表编号
+        values.pu_ammeter_id,// pu_ammeter_id pg_ammeter_id 消费者电表编号
       ]
     );
     if (unsub) {
@@ -291,8 +309,9 @@ export const TradeList = () => {
                     showSellModal(item)
                   }}
                   editClick={() => {
-                    //setAddEdit(2);
-                    //setVisibleModal(true);
+                    setValues(item);
+                    setAddEdit(2);
+                    setVisibleModal(true);
                   }}
                   closeClick={(status) => {
                     closeClick(status)
@@ -312,6 +331,7 @@ export const TradeList = () => {
       />
       <AddEditModal
         visible={visibleModal}
+        values={values}
         addEdit={addEdit}
         onCancel={handleCancel}
         onSubmit={handleSubmit}

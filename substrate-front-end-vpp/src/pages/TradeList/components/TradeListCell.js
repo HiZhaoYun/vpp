@@ -1,9 +1,6 @@
 import React  from 'react';
 import { Row, Col, Divider, Button } from 'antd';
 import styles from '../style.less';
-import Light from "@/pages/TradeList/assets/light.png";
-import Wind from "@/pages/TradeList/assets/wind.png";
-import Fir from "@/pages/TradeList/assets/fir.png";
 
 const TradeListCell = props => {
   const { item, admin, buyClick, sellClick, editClick, closeClick } = props;
@@ -22,18 +19,18 @@ const TradeListCell = props => {
         <Col span={4}>
           <div className={styles.listContent}>
             <div className={styles.listContentItem}>
-              <span>{item.name}</span>
-              <p>{`类型: ${(item.type === 0) ? "光电" : ((item.type === 1) ? "风电" : "火电")}`}</p>
-              <span>{`邮编: ${item.code}`}</span>
-              <p>{`线损: ${item.loss}`}</p>
+              <span>{item.vpp_name}</span>
+              <p>{`类型: ${(item.energy_type === 0) ? "光电" : ((item.energy_type === 1) ? "风电" : "火电")}`}</p>
+              <span>{`邮编: ${item.post_code}`}</span>
+              <p>{`线损: ${item.transport_lose}`}</p>
             </div>
           </div>
         </Col>
         <Col span={4}>
           <div className={styles.listContent}>
             <div className={styles.listContentItem}>
-              <span>{`可销售度数: ${item.canSell}`}</span>
-              <p>{`售价: ${item.sellPrice}`}</p>
+              <span>{`可销售度数: ${item.pre_total_stock}`}</span>
+              <p>{`售价: ${item.sell_price}`}</p>
             </div>
           </div>
         </Col>
@@ -41,14 +38,14 @@ const TradeListCell = props => {
           <div className={styles.listContent}>
             <div className={styles.listContentItem}>
               <span>{`需购买度数: ${item.needBuy}`}</span>
-              <p>{`售价: ${item.buyPrice}`}</p>
+              <p>{`售价: ${item.buy_price}`}</p>
             </div>
           </div>
         </Col>
         <Col span={5}>
           <div className={styles.listContent}>
             <div className={styles.listContentItem}>
-              <span>{item.status}</span>
+              <span>{item.business_status === 'Opened' ? '营业中':'歇业'}</span>
             </div>
           </div>
         </Col>

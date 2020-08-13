@@ -91,7 +91,7 @@ const OperationModal = props => {
             },
           ]}
         >
-          <Input placeholder="请输入数量（度）" />
+          <Input placeholder="请输入数量" addonAfter="度"/>
         </Form.Item>
         <Form.Item
           name="loss"
@@ -103,7 +103,19 @@ const OperationModal = props => {
             },
           ]}
         >
-          <Input placeholder="请输入线损率（%）" />
+          <Input placeholder="请输入线损率" addonAfter="%"/>
+        </Form.Item>
+        <Form.Item
+          name="pu_ammeter_id"
+          label="电表编号"
+          rules={[
+            {
+              required: true,
+              message: '请输入电表编号',
+            },
+          ]}
+        >
+          <Input placeholder="请输入电表编号" />
         </Form.Item>
         <Form.Item name="electric_type" label="电流类型" rules={[{ required: true }]}>
           <Select

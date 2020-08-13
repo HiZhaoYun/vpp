@@ -15,6 +15,9 @@ import {transformParams, txErrHandler, txResHandler} from "@/components/TxButton
 import OperationModal from './components/OperationModal';
 import AddEditModal from "./components/AddEditModal";
 import styles from './style.less';
+import Wind from "./assets/wind.png";
+import Light from "./assets/light.png";
+import Fir from "./assets/fir.png";
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -72,7 +75,7 @@ export const TradeList = () => {
           source.push({
             id: i,
             address: address,
-            logo: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
+            logo: (data.energy_type === 0) ? Light : ((data.energy_type === 1) ? Wind : Fir),
             latest: new Date().toLocaleDateString(),
             total: 0,
             canSell: data.pre_total_stock,

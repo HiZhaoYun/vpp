@@ -1,6 +1,9 @@
 import React  from 'react';
 import { Row, Col, Divider, Button } from 'antd';
 import styles from '../style.less';
+import Light from "@/pages/TradeList/assets/light.png";
+import Wind from "@/pages/TradeList/assets/wind.png";
+import Fir from "@/pages/TradeList/assets/fir.png";
 
 const TradeListCell = props => {
   const { item, admin, buyClick, sellClick, editClick, closeClick } = props;
@@ -20,7 +23,7 @@ const TradeListCell = props => {
           <div className={styles.listContent}>
             <div className={styles.listContentItem}>
               <span>{item.name}</span>
-              <p>{`类型: ${item.type}`}</p>
+              <p>{`类型: ${(item.type === 0) ? "光电" : ((item.type === 1) ? "风电" : "火电")}`}</p>
               <span>{`邮编: ${item.code}`}</span>
               <p>{`线损: ${item.loss}`}</p>
             </div>

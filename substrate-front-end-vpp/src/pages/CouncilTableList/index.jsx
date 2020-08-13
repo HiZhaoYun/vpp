@@ -207,6 +207,44 @@ const TableList = () => {
     });
   },[api]);
 
+  const getFromAcc = async () => {
+    if (!accountPair) {
+      console.log('No accountPair!');
+      return ;
+    }
+
+    const {
+      addr,
+      meta: {source, isInjected}
+    } = accountPair;
+    let fromAcct;
+
+    // signer is from Polkadot-js browser extension
+    if (isInjected) {
+      const injected = await web3FromSource(source);
+      fromAcct = addr;
+      api.setSigner(injected.signer);
+    } else {
+      fromAcct = accountPair;
+    }
+
+    return fromAcct;
+  };
+
+  // add alice to council
+  useEffect(() => {
+    if (!api || !accountPair) return;
+    try {
+      (async () => {
+        const param = transformParams([true],[address]);
+        const fromAcct = await getFromAcc();
+        await api.tx.parliamentModule.forceAddMember(...param).signAndSend(fromAcct);
+      })()
+    } catch (error) {
+      console.log(error)
+    }
+  },[accountPair]);
+
   useEffect(() => {
     if (!api || !count) return;
     const source = [];
